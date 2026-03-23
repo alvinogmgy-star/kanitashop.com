@@ -4,246 +4,230 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kanita Olshop - Loyalty Card</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --pink: #ff4d94; --gold: #ffd700; --bg: #fff5f8; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 15px; display: flex; justify-content: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 450px; background: white; border-radius: 30px; padding: 25px; box-shadow: 0 10px 40px rgba(255, 77, 148, 0.15); align-self: flex-start; }
-        .header { text-align: center; margin-bottom: 25px; }
-        .header h1 { color: var(--pink); margin: 0; font-size: 24px; letter-spacing: 2px; }
-        .section { display: none; }
-        .active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .card { background: #fff; border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #eee; }
-        input { width: 100%; padding: 14px; margin-bottom: 12px; border: 2px solid #f8f8f8; border-radius: 12px; outline: none; font-family: inherit; }
-        input:focus { border-color: var(--pink); }
-        button { width: 100%; padding: 15px; background: var(--pink); color: white; border: none; border-radius: 15px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        button:active { transform: scale(0.97); }
-        .btn-secondary { background: #f0f0f0; color: #666; margin-top: 10px; }
-        .thanks-box { text-align: center; padding: 40px 15px; background: linear-gradient(135deg, var(--pink), #ff85b3); color: white; border-radius: 25px; margin-bottom: 20px; }
-        .coin-circle { width: 120px; height: 120px; background: rgba(255,255,255,0.2); border: 4px solid var(--gold); border-radius: 50%; margin: 15px auto; display: flex; align-items: center; justify-content: center; font-size: 45px; font-weight: 600; }
-        .table-container { max-height: 300px; overflow-y: auto; margin: 15px 0; border: 1px solid #eee; border-radius: 15px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { background: #fafafa; padding: 10px; color: #888; text-align: left; position: sticky; top: 0; border-bottom: 1px solid #eee; }
-        td { padding: 12px 10px; border-bottom: 1px solid #f9f9f9; }
-        #loader { display: none; text-align: center; color: var(--pink); font-weight: 600; padding: 10px; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
+        body { background-color: #fff0f5; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .pink-gradient { background: linear-gradient(135deg, #ffb6c1, #ff69b4); }
+        .hidden { display: none; }
+        /* Custom scrollbar untuk list admin */
+        #admin-list-container::-webkit-scrollbar { width: 4px; }
+        #admin-list-container::-webkit-scrollbar-thumb { background: #ffb6c1; border-radius: 10px; }
     </style>
 </head>
-<body>
+<body class="p-4 min-h-screen flex items-center justify-center">
 
-<div class="container">
-    <div class="header">
-        <h1>🌸 KANITA OLSHOP</h1>
-        <p style="font-size: 10px; color: #ccc; margin: 0;">MEMBERSHIP DIGITAL</p>
-    </div>
-
-    <div id="loader">Sedang Memproses... ✨</div>
-
-    <div id="pg-auth" class="section active">
-        <div class="card">
-            <label style="font-size: 11px; font-weight: 600; color: #888;">NAMA LENGKAP</label>
-            <input type="text" id="reg-nama" placeholder="Contoh: Siti">
-            <label style="font-size: 11px; font-weight: 600; color: #888;">NOMOR WHATSAPP</label>
-            <input type="number" id="reg-phone" placeholder="Contoh: 62812345678">
-            <button id="btn-login" onclick="handleAuth()">Masuk & Cek Koin ✨</button>
+    <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border-8 border-pink-100 relative">
+        
+        <div class="pink-gradient p-8 text-white text-center">
+            <h1 class="text-3xl font-black tracking-tighter uppercase">🌸 KANITA OLSHOP</h1>
+            <p class="text-xs font-light tracking-[0.2em] opacity-80 mt-1">MEMBERSHIP DIGITAL</p>
         </div>
-        <button class="btn-secondary" onclick="aksesAdmin()">Panel Penjual 🔑</button>
-    </div>
 
-    <div id="pg-buyer" class="section">
-        <div class="thanks-box">
-            <h2 style="margin: 0; font-size: 16px; font-weight: 300;">TERIMAKASIH TELAH BERBELANJA DI KANITA OLSHOP</h2>
-            <div class="coin-circle" id="view-koin">0</div>
-            <p id="view-nama" style="margin: 0; font-weight: 600; font-size: 18px;"></p>
-            <p style="margin: 5px 0 0 0; font-size: 11px; opacity: 0.9;">TOTAL SALDO KOIN ANDA</p>
+        <div id="loader" class="hidden absolute inset-0 bg-white/90 z-50 flex flex-col items-center justify-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-pink-500"></div>
+            <p class="text-pink-500 mt-4 font-bold animate-pulse text-sm">Sedang Memproses... ✨</p>
         </div>
-        <button class="btn-secondary" onclick="location.reload()">Keluar Sesi</button>
-    </div>
 
-    <div id="pg-admin" class="section">
-        <h3 style="margin: 0; color: var(--pink);">📊 Beranda Penjual</h3>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>MEMBER</th>
-                        <th style="text-align: center;">KOIN</th>
-                        <th style="text-align: right;">PERAK</th>
-                    </tr>
-                </thead>
-                <tbody id="list-statistik">
-                    <tr><td colspan="3" style="text-align: center; padding: 20px;">Memuat data...</td></tr>
-                </tbody>
-            </table>
-        </div>
-        <div style="text-align: center; margin-top: 15px;">
-            <div id="qrcode"></div><br>
-            <button style="width: auto; padding: 8px 15px; font-size: 11px;" onclick="unduhQR()">Simpan QR Website</button>
-        </div>
-        <button class="btn-secondary" onclick="location.reload()" style="margin-top: 20px;">Log Out Admin</button>
-    </div>
-
-    <div id="pg-konversi" class="section">
-        <h3 style="margin: 0 0 15px 0; color: var(--pink);">💰 Update Koin</h3>
-        <div class="card">
-            <p>Member: <b id="target-nama" style="color: var(--pink);">...</b></p>
-            <label style="font-size: 11px;">NOMINAL BELANJA (RP)</label>
-            <input type="number" id="nominal-rp" placeholder="Contoh: 100000">
-            <div style="background: #fff9fb; padding: 10px; border-radius: 10px; font-size: 12px; color: #d63384; margin-bottom: 15px; text-align: center;">
-                Menjadi: <b id="pre-val">0</b> Koin & <b id="pre-per">0</b> Perak
+        <div id="section-login" class="p-8 space-y-5">
+            <div class="text-center pb-2">
+                <p class="text-gray-500 text-sm italic">Cek saldo koin belanja kamu di sini!</p>
             </div>
-            <button onclick="simpanKoin()">Konfirmasi & Simpan</button>
-            <button class="btn-secondary" onclick="showPage('pg-admin')">Batal</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    // --- KONFIGURASI DATABASE BARU ANDA ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyCkNwuF6gvx6gFr0LboivTJZ5LONeKlLPc",
-        authDomain: "kanitaolshop-f8ad0.firebaseapp.com",
-        projectId: "kanitaolshop-f8ad0",
-        // Menambahkan format URL database yang benar berdasarkan Project ID baru
-        databaseURL: "https://kanitaolshop-f8ad0-default-rtdb.firebaseio.com", 
-        storageBucket: "kanitaolshop-f8ad0.firebasestorage.app",
-        messagingSenderId: "1022490433447",
-        appId: "1:1022490433447:web:0b56139301c37bdf2b0882",
-        measurementId: "G-HK3EFXLNN5"
-    };
-
-    // Inisialisasi Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    let currentTargetPhone = "";
-
-    // Live Preview Konversi
-    document.getElementById('nominal-rp').addEventListener('input', (e) => {
-        let val = Math.floor(e.target.value / 1000);
-        document.getElementById('pre-val').innerText = val;
-        document.getElementById('pre-per').innerText = val;
-    });
-
-    // Login/Daftar
-    async function handleAuth() {
-        const nama = document.getElementById('reg-nama').value.trim();
-        const phone = document.getElementById('reg-phone').value.trim();
-        
-        if(!nama || phone.length < 10) return alert("Data Nama/WhatsApp tidak benar!");
-        
-        toggleLoading(true);
-        const userRef = db.ref('users/' + phone);
-        
-        // Cek data sekali (once) untuk menentukan login atau register
-        userRef.once('value').then(snap => {
-            const data = snap.val();
-            if(data) {
-                // User sudah ada
-                document.getElementById('view-nama').innerText = data.nama;
-                document.getElementById('view-koin').innerText = data.coins || 0;
-                toggleLoading(false);
-                showPage('pg-buyer');
-            } else {
-                // User baru, buat data baru
-                userRef.set({ 
-                    nama: nama, 
-                    phone: phone, 
-                    coins: 0, 
-                    joinDate: new Date().toISOString() 
-                }).then(() => {
-                    document.getElementById('view-nama').innerText = nama;
-                    document.getElementById('view-koin').innerText = 0;
-                    toggleLoading(false);
-                    showPage('pg-buyer');
-                });
-            }
-        }).catch(err => {
-            toggleLoading(false);
-            alert("Terjadi kesalahan: " + err.message + "\nPastikan Realtime Database Rules sudah diset ke 'true'.");
-        });
-    }
-
-    // Fungsi Admin & Navigasi
-    function aksesAdmin() {
-        const pw = prompt("Password Penjual:");
-        if(pw === "KANITATHENDY29062009") {
-            showPage('pg-admin');
-            renderStatistik();
-            generateQR();
-        } else if(pw !== null) alert("Password Salah!");
-    }
-
-    function renderStatistik() {
-        db.ref('users').on('value', snap => {
-            const list = document.getElementById('list-statistik');
-            list.innerHTML = "";
-            let dataArr = [];
-            snap.forEach(c => dataArr.push(c.val()));
-            dataArr.sort((a,b) => (b.coins || 0) - (a.coins || 0));
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-pink-400 ml-1 uppercase tracking-widest">Nama Lengkap</label>
+                <input type="text" id="input-nama" placeholder="Masukkan Nama Anda" class="w-full p-4 bg-pink-50 border-2 border-transparent focus:border-pink-300 rounded-2xl outline-none transition-all text-sm">
+            </div>
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-pink-400 ml-1 uppercase tracking-widest">Nomor WhatsApp</label>
+                <input type="tel" id="input-wa" placeholder="Contoh: 0812345678" class="w-full p-4 bg-pink-50 border-2 border-transparent focus:border-pink-300 rounded-2xl outline-none transition-all text-sm">
+            </div>
             
-            if(dataArr.length === 0) {
-                list.innerHTML = "<tr><td colspan='3' style='text-align: center; padding: 20px;'>Belum ada member</td></tr>";
-                return;
+            <button onclick="handleLogin()" class="w-full pink-gradient text-white font-extrabold py-4 rounded-2xl shadow-lg hover:brightness-110 active:scale-95 transition-all mt-2">
+                Masuk & Cek Koin ✨
+            </button>
+            
+            <button onclick="handleAdminAccess()" class="w-full text-pink-300 text-xs font-semibold py-2 hover:text-pink-500 transition-colors">
+                Panel Penjual 🔑
+            </button>
+        </div>
+
+        <div id="section-member" class="p-8 hidden text-center space-y-6 animate-fade-in">
+            <h2 class="text-gray-600 font-bold uppercase tracking-wide text-sm">Halo, <span id="user-greeting" class="text-pink-500">Member</span>!</h2>
+            
+            <div class="bg-pink-50 p-8 rounded-[2rem] border-4 border-dashed border-pink-200 relative">
+                <div id="display-koin" class="text-7xl font-black text-pink-500 leading-none">0</div>
+                <p class="text-pink-400 font-extrabold mt-2 uppercase text-[10px] tracking-[0.2em]">Total Saldo Koin</p>
+                <div class="mt-4 pt-4 border-t border-pink-200">
+                    <p class="text-xs text-gray-400 italic font-medium">Saldo Perak: <span id="display-perak" class="font-bold text-gray-600">0</span></p>
+                </div>
+            </div>
+
+            <div class="bg-yellow-50 p-4 rounded-2xl border border-yellow-100">
+                <p class="text-[10px] text-yellow-700 leading-relaxed">
+                    Kumpulkan terus koinnya! <br> 
+                    <span class="font-bold">10 Koin</span> dapat ditukar dengan potongan belanja senilai <span class="font-bold text-pink-500">Rp10.000</span>.
+                </p>
+            </div>
+
+            <button onclick="location.reload()" class="w-full bg-gray-100 text-gray-400 font-bold py-3 rounded-2xl hover:bg-gray-200 transition-all text-sm">
+                Keluar Sesi
+            </button>
+        </div>
+
+        <div id="section-admin" class="p-6 hidden bg-gray-50 min-h-[480px]">
+            <div class="flex justify-between items-center border-b-2 border-pink-100 pb-4 mb-4">
+                <h3 class="font-black text-gray-700 uppercase italic text-sm">📊 Data Member</h3>
+                <button onclick="location.reload()" class="text-[9px] bg-red-100 text-red-500 px-3 py-1 rounded-full font-bold uppercase tracking-tighter">Log Out</button>
+            </div>
+            
+            <div id="admin-list-container" class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                <p class="text-center text-gray-400 text-xs py-10 italic">Memuat data...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /**
+         * KONFIGURASI APLIKASI
+         */
+        const CONFIG = {
+            // Tempelkan URL Web App dari Google Script di sini
+            SCRIPT_URL: "GANTI_DENGAN_URL_WEB_APP_GSCRIPT_ANDA", 
+            ADMIN_PIN: "1234" 
+        };
+
+        function toggleLoading(show) {
+            document.getElementById('loader').classList.toggle('hidden', !show);
+        }
+
+        /**
+         * FUNGSI LOGIN & PENDAFTARAN OTOMATIS
+         */
+        async function handleLogin() {
+            const nama = document.getElementById('input-nama').value.trim();
+            const wa = document.getElementById('input-wa').value.trim();
+
+            if(!nama || !wa) return alert("Mohon isi nama dan nomor WhatsApp kamu ya! 😊");
+
+            toggleLoading(true);
+            try {
+                // Ambil semua data member dari Sheets
+                const response = await fetch(CONFIG.SCRIPT_URL);
+                if (!response.ok) throw new Error();
+                
+                const data = await response.json();
+                // Cari apakah nomor WA sudah terdaftar
+                const user = data.find(u => String(u.wa) === String(wa));
+
+                if(user) {
+                    showDashboard(user.nama, user.koin, user.perak);
+                } else {
+                    // Jika member baru, kirim data pendaftaran ke Sheets
+                    const newUser = { nama: nama, wa: wa, koin: 0, perak: 0 };
+                    
+                    await fetch(CONFIG.SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors', 
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newUser)
+                    });
+                    
+                    // Langsung masuk ke dashboard (karena POST no-cors tidak return data)
+                    showDashboard(nama, 0, 0);
+                }
+            } catch (err) {
+                alert("Gagal terhubung ke database. Pastikan URL SCRIPT sudah benar!");
+            } finally {
+                toggleLoading(false);
             }
+        }
 
-            dataArr.forEach(m => {
-                list.innerHTML += `
-                    <tr onclick="bukaKonversi('${m.phone}', '${m.nama}')">
-                        <td><b>${m.nama}</b><br><small>${m.phone}</small></td>
-                        <td style="text-align:center; color:var(--pink); font-weight:600;">${m.coins || 0}</td>
-                        <td style="text-align:right;">${m.coins || 0} PRK</td>
-                    </tr>
-                `;
-            });
-        });
-    }
+        function showDashboard(nama, koin, perak) {
+            document.getElementById('user-greeting').innerText = nama;
+            document.getElementById('display-koin').innerText = koin;
+            document.getElementById('display-perak').innerText = perak;
+            document.getElementById('section-login').classList.add('hidden');
+            document.getElementById('section-member').classList.remove('hidden');
+        }
 
-    function bukaKonversi(phone, nama) {
-        currentTargetPhone = phone;
-        document.getElementById('target-nama').innerText = nama;
-        document.getElementById('nominal-rp').value = "";
-        showPage('pg-konversi');
-    }
+        /**
+         * FUNGSI KHUSUS ADMIN
+         */
+        function handleAdminAccess() {
+            const inputPin = prompt("Masukkan PIN Keamanan Admin:");
+            if(inputPin === CONFIG.ADMIN_PIN) {
+                document.getElementById('section-login').classList.add('hidden');
+                document.getElementById('section-admin').classList.remove('hidden');
+                loadMemberData();
+            } else if(inputPin !== null) {
+                alert("PIN Salah! Akses ditolak.");
+            }
+        }
 
-    function simpanKoin() {
-        const rp = document.getElementById('nominal-rp').value;
-        if(!rp || rp < 1000) return alert("Minimal belanja Rp 1.000");
-        
-        const bonus = Math.floor(rp / 1000);
-        db.ref('users/' + currentTargetPhone + '/coins').transaction(c => (c || 0) + bonus)
-        .then(() => {
-            alert("Berhasil menambahkan " + bonus + " koin!");
-            showPage('pg-admin');
-        });
-    }
+        async function loadMemberData() {
+            const container = document.getElementById('admin-list-container');
+            container.innerHTML = `<p class="text-center py-10 text-pink-400 animate-bounce text-xs">Menyinkronkan data...</p>`;
+            
+            try {
+                const response = await fetch(CONFIG.SCRIPT_URL);
+                const data = await response.json();
+                
+                if(!data || data.length === 0) {
+                    container.innerHTML = `<p class="text-center text-gray-400 py-20 text-xs">Belum ada member terdaftar.</p>`;
+                    return;
+                }
 
-    function showPage(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        window.scrollTo(0,0);
-    }
+                container.innerHTML = data.map(m => `
+                    <div class="bg-white p-4 rounded-3xl shadow-sm border border-pink-50 flex justify-between items-center">
+                        <div class="max-w-[65%]">
+                            <p class="font-bold text-gray-700 text-xs truncate">${m.nama}</p>
+                            <p class="text-[9px] text-gray-400 tracking-wider">${m.wa}</p>
+                            <div class="flex gap-2 mt-1">
+                                <span class="text-[10px] font-bold text-pink-500 bg-pink-50 px-2 py-0.5 rounded-lg">${m.koin} Koin</span>
+                                <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg">${m.perak} Prk</span>
+                            </div>
+                        </div>
+                        <button onclick="updateMemberData('${m.wa}', '${m.nama}')" 
+                                class="bg-pink-500 text-white text-[9px] px-4 py-2 rounded-xl font-bold shadow-sm active:scale-90 transition-all uppercase tracking-tighter">
+                            Update
+                        </button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = `<p class="text-center text-red-400 text-[10px] py-20 italic font-bold">Gagal memuat database!</p>`;
+            }
+        }
 
-    function toggleLoading(show) {
-        document.getElementById('loader').style.display = show ? 'block' : 'none';
-    }
+        async function updateMemberData(wa, nama) {
+            const koinBaru = prompt(`JUMLAH KOIN BARU untuk ${nama}:`, "0");
+            const perakBaru = prompt(`JUMLAH PERAK BARU untuk ${nama}:`, "0");
 
-    function generateQR() {
-        const q = document.getElementById("qrcode"); q.innerHTML = "";
-        new QRCode(q, { text: window.location.href, width: 120, height: 120, colorDark: "#ff4d94" });
-    }
-
-    function unduhQR() {
-        const c = document.querySelector("#qrcode canvas");
-        if(c) { const l = document.createElement('a'); l.download = 'QR_Kanita.png'; l.href = c.toDataURL(); l.click(); }
-    }
-</script>
-
+            if(koinBaru !== null && perakBaru !== null) {
+                toggleLoading(true);
+                try {
+                    await fetch(CONFIG.SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            wa: wa, 
+                            nama: nama, 
+                            koin: koinBaru, 
+                            perak: perakBaru 
+                        })
+                    });
+                    
+                    alert("Data " + nama + " berhasil diupdate!");
+                    // Beri jeda 1 detik agar Sheets selesai memproses sebelum refresh list
+                    setTimeout(loadMemberData, 1000);
+                } catch (err) {
+                    alert("Gagal mengupdate koin.");
+                } finally {
+                    toggleLoading(false);
+                }
+            }
+        }
+    </script>
 </body>
 </html>
