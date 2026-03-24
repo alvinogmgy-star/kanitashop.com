@@ -3,35 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KANITA OLSHOP - Member Cloud</title>
+    <title>KANITA OLSHOP - Member System</title>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #fff1f7; color: #333; }
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; margin: 30px 0; color: #e91e63; }
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(233,30,99,0.1); margin-bottom: 20px; }
-        .btn { background: #e91e63; color: white; border: none; padding: 12px; border-radius: 25px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fff1f7; color: #333; line-height: 1.6; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; text-align: center; }
+        .header h1 { color: #e91e63; font-size: 2.2em; margin-bottom: 5px; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(233,30,99,0.1); margin-top: 20px; }
+        .btn { background: #e91e63; color: white; border: none; padding: 15px; border-radius: 30px; cursor: pointer; width: 100%; font-weight: bold; margin: 10px 0; font-size: 16px; transition: 0.3s; }
+        .btn:hover { background: #c2185b; transform: scale(1.02); }
         .btn-sec { background: #f8bbd9; color: #e91e63; }
-        input { width: 100%; padding: 12px; border: 2px solid #f8bbd9; border-radius: 15px; margin-bottom: 10px; outline: none; }
+        input { width: 100%; padding: 14px; border: 2px solid #f8bbd9; border-radius: 15px; margin-bottom: 12px; outline: none; font-size: 16px; }
         .hidden { display: none !important; }
-        .tabs { display: flex; margin-bottom: 20px; background: #fce4ec; border-radius: 20px; overflow: hidden; }
-        .tab-btn { flex: 1; padding: 10px; border: none; cursor: pointer; color: #e91e63; font-weight: bold; }
+        .tabs { display: flex; margin-bottom: 20px; background: #fce4ec; border-radius: 30px; overflow: hidden; padding: 5px; }
+        .tab-btn { flex: 1; padding: 10px; border: none; cursor: pointer; color: #e91e63; font-weight: bold; background: none; border-radius: 25px; }
         .tab-btn.active { background: #e91e63; color: white; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .coin-txt { font-size: 4em; color: #e91e63; font-weight: bold; margin: 15px 0; text-shadow: 2px 2px #f8bbd9; }
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 14px; }
         th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
-        .coin-txt { font-size: 3em; color: #e91e63; font-weight: bold; text-align: center; margin: 20px 0; }
+        th { color: #e91e63; border-bottom: 2px solid #f8bbd9; }
+        canvas { max-width: 100%; height: auto !important; border: 5px solid white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
 <div id="p-main" class="container">
-    <div class="header"><h1>🛍️ KANITA OLSHOP</h1><p>Member & Loyalty System</p></div>
-    <button class="btn" onclick="nav('p-auth')">MASUK / DAFTAR MEMBER</button>
+    <div style="margin-top: 50px;">
+        <h1 style="color:#e91e63;">🛍️ KANITA OLSHOP</h1>
+        <p>Solusi Belanja Hemat & Cerdas</p>
+        <button class="btn" onclick="nav('p-auth')" style="margin-top:40px;">LOGIN / DAFTAR MEMBER</button>
+    </div>
 </div>
 
 <div id="p-auth" class="container hidden">
-    <div class="card" style="max-width: 400px; margin: 0 auto;">
+    <div class="card">
         <div class="tabs">
             <button id="t-buy" class="tab-btn active" onclick="setTab('buy')">PEMBELI</button>
             <button id="t-own" class="tab-btn" onclick="setTab('own')">PEMILIK</button>
@@ -39,45 +45,55 @@
         <div id="f-buy">
             <input type="text" id="buy-name" placeholder="Nama Lengkap">
             <input type="tel" id="buy-hp" placeholder="No WhatsApp (08...)">
-            <button class="btn" onclick="actionBuy()">MULAI SEKARANG</button>
+            <button class="btn" id="btn-login-buy">MASUK SEKARANG</button>
         </div>
         <div id="f-own" class="hidden">
             <input type="text" id="own-user" placeholder="Username">
             <input type="password" id="own-pass" placeholder="Password">
-            <button class="btn" onclick="actionOwn()">LOGIN ADMIN</button>
+            <button class="btn" id="btn-login-own" style="background:#333;">LOGIN ADMIN</button>
         </div>
         <button class="btn btn-sec" onclick="nav('p-main')">KEMBALI</button>
     </div>
 </div>
 
 <div id="p-dash-buy" class="container hidden">
-    <div class="card" style="text-align: center;">
+    <div class="card">
         <h2 id="hello-buy">Halo!</h2>
         <div class="coin-txt"><span id="coin-buy">0</span> 💎</div>
-        <p>Kumpulkan koin dengan belanja di Kanita Olshop!</p>
-        <button class="btn btn-sec" onclick="location.reload()">KELUAR</button>
+        <p>Kumpulkan koin setiap belanja di Kanita Olshop!</p>
+        <button class="btn btn-sec" onclick="location.reload()" style="margin-top:30px;">KELUAR</button>
     </div>
 </div>
 
-<div id="p-dash-own" class="container hidden">
-    <div class="header"><h2>👑 PANEL ADMIN</h2><button class="btn btn-sec" style="width: auto; padding: 5px 15px;" onclick="location.reload()">Logout</button></div>
+<div id="p-dash-own" class="container hidden" style="max-width: 800px;">
     <div class="card">
-        <h3>💰 Tambah Koin</h3>
-        <input type="tel" id="search-hp" placeholder="Masukkan No HP Member">
-        <button class="btn" onclick="findMember()">CARI MEMBER</button>
-        <div id="topup-box" class="hidden" style="margin-top: 20px;">
-            <p id="target-name" style="font-weight: bold; color: #e91e63;"></p>
-            <input type="number" id="input-rp" placeholder="Nominal Belanja (Rp)">
-            <button class="btn" onclick="addCoin()">ISI KOIN</button>
+        <h2 style="color:#e91e63;">👑 PANEL ADMIN</h2>
+        <button class="btn btn-sec" style="width:auto; padding:5px 20px;" onclick="location.reload()">Logout</button>
+        <hr style="margin:20px 0; border:1px solid #eee;">
+        
+        <h3>💰 Isi Koin Member</h3>
+        <input type="tel" id="search-hp" placeholder="Cari No HP Member">
+        <button class="btn" id="btn-find">CARI MEMBER</button>
+        
+        <div id="topup-box" class="hidden" style="background:#fff1f7; padding:15px; border-radius:15px; margin-top:15px;">
+            <p id="target-name" style="font-weight:bold; color:#e91e63;"></p>
+            <input type="number" id="input-rp" placeholder="Total Belanja (Rp)">
+            <button class="btn" id="btn-add-coin">TAMBAH KOIN</button>
         </div>
     </div>
-    <div class="card" style="text-align: center;">
-        <h3>📱 QR CODE TOKO</h3>
-        <canvas id="canvas-qr" style="margin: 15px auto;"></canvas>
-    </div>
+
     <div class="card">
+        <h3>📱 QR CODE TOKO</h3>
+        <div id="qr-container" style="padding:20px;">
+            <canvas id="canvas-qr"></canvas>
+        </div>
+    </div>
+
+    <div class="card" style="text-align: left;">
         <h3>📊 Daftar Member (<span id="total-m">0</span>)</h3>
-        <table id="table-m"><thead><tr><th>Nama</th><th>HP</th><th>Koin</th></tr></thead><tbody></tbody></table>
+        <div style="overflow-x: auto;">
+            <table id="table-m"><thead><tr><th>Nama</th><th>HP</th><th>Koin</th></tr></thead><tbody></tbody></table>
+        </div>
     </div>
 </div>
 
@@ -100,6 +116,7 @@
     let allM = [];
     let curT = null;
 
+    // Fungsi Navigasi Global
     window.nav = (id) => {
         document.querySelectorAll('.container').forEach(p => p.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
@@ -112,46 +129,55 @@
         document.getElementById('t-own').classList.toggle('active', t === 'own');
     };
 
-    window.actionBuy = async () => {
+    // Logika Pembeli
+    document.getElementById('btn-login-buy').onclick = async () => {
         const n = document.getElementById('buy-name').value.trim();
         const h = document.getElementById('buy-hp').value.trim();
-        if(!h.startsWith('08')) return alert('Gunakan nomor 08...');
+        if(!h.startsWith('08') || h.length < 10) return alert('Masukkan nomor WA 08... yang benar!');
         
         try {
             const snap = await get(ref(db, 'members/' + h));
             if(snap.exists()){
                 const d = snap.val();
-                document.getElementById('hello-buy').innerText = "Halo, " + d.name;
+                document.getElementById('hello-buy').innerText = "Halo, " + d.name + "!";
                 document.getElementById('coin-buy').innerText = d.coins || 0;
             } else {
-                await set(ref(db, 'members/' + h), { name: n, phone: h, coins: 0 });
-                document.getElementById('hello-buy').innerText = "Halo, " + n;
+                if(!n) return alert('Silakan isi nama Anda!');
+                const newM = { name: n, phone: h, coins: 0, date: new Date().toISOString() };
+                await set(ref(db, 'members/' + h), newM);
+                document.getElementById('hello-buy').innerText = "Halo, " + n + "!";
                 document.getElementById('coin-buy').innerText = 0;
             }
             nav('p-dash-buy');
-        } catch(e) { alert('Koneksi Gagal!'); }
+        } catch(e) { alert('Gagal memuat data. Periksa internet Anda.'); }
     };
 
-    window.actionOwn = () => {
+    // Logika Admin
+    document.getElementById('btn-login-own').onclick = () => {
         const u = document.getElementById('own-user').value.trim();
         const p = document.getElementById('own-pass').value;
         if(u === 'KANITAOLSHOP' && p === 'KANITATHENDY29062009') {
             nav('p-dash-own');
-            QRCode.toCanvas(document.getElementById('canvas-qr'), window.location.href, { width: 150 });
+            
+            // Render QR Code dengan proteksi library
+            if(typeof QRCode !== 'undefined') {
+                QRCode.toCanvas(document.getElementById('canvas-qr'), window.location.href, { width: 180, margin: 2, color: {dark:"#e91e63"} });
+            }
+
             onValue(ref(db, 'members'), (s) => {
                 const data = s.val();
                 const tbody = document.querySelector('#table-m tbody');
                 tbody.innerHTML = "";
                 allM = data ? Object.values(data) : [];
-                allM.forEach(m => {
+                allM.sort((a,b) => (b.coins || 0) - (a.coins || 0)).forEach(m => {
                     tbody.innerHTML += `<tr><td>${m.name}</td><td>${m.phone}</td><td style="color:#e91e63; font-weight:bold">${m.coins || 0}</td></tr>`;
                 });
                 document.getElementById('total-m').innerText = allM.length;
             });
-        } else { alert('Akses Ditolak!'); }
+        } else { alert('Akses Admin Ditolak!'); }
     };
 
-    window.findMember = () => {
+    document.getElementById('btn-find').onclick = () => {
         const h = document.getElementById('search-hp').value.trim();
         curT = allM.find(m => m.phone === h);
         if(curT){
@@ -160,14 +186,19 @@
         } else { alert('Member tidak ditemukan!'); }
     };
 
-    window.addCoin = async () => {
+    document.getElementById('btn-add-coin').onclick = async () => {
         const rp = parseInt(document.getElementById('input-rp').value);
-        if(!rp || rp < 1000) return alert('Minimal Rp 1.000');
+        if(!rp || rp < 1000) return alert('Nominal belanja minimal Rp 1.000');
         const bonus = Math.floor(rp / 1000);
-        await update(ref(db, 'members/' + curT.phone), { coins: (curT.coins || 0) + bonus });
-        alert('Berhasil! Koin ditambahkan.');
-        document.getElementById('topup-box').classList.add('hidden');
-        document.getElementById('input-rp').value = "";
+        const totalBaru = (curT.coins || 0) + bonus;
+        
+        try {
+            await update(ref(db, 'members/' + curT.phone), { coins: totalBaru });
+            alert('Berhasil! ' + bonus + ' koin ditambahkan.');
+            document.getElementById('topup-box').classList.add('hidden');
+            document.getElementById('input-rp').value = "";
+            document.getElementById('search-hp').value = "";
+        } catch(e) { alert('Gagal update koin.'); }
     };
 </script>
 </body>
